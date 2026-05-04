@@ -1,6 +1,20 @@
-#!/usr/bin/env ruby
-require_relative "../config/boot"
-require "bundler/audit/cli"
+#!/usr/bin/env bash
+set -euo pipefail
 
-ARGV.concat %w[ --config config/bundler-audit.yml ] if ARGV.empty? || ARGV.include?("check")
-Bundler::Audit::CLI.start
+source "$(dirname "$0")/env.sh"
+require_command bundle
+
+args=("$@")
+
+if [ "$#" -eq 0 ]; then
+  args=(--config config/bundler-audit.yml)
+else
+  for arg in "$@"; do
+    if [ "$arg" = "check" ]; then
+      args+=(--config config/bundler-audit.yml)
+      break
+    fi
+  done
+fi
+
+exec bundle exec bundler-audit "${args[@]}"

@@ -1,6 +1,21 @@
-#!/usr/bin/env ruby
-require_relative "../config/boot"
-require "active_support/continuous_integration"
+#!/usr/bin/env bash
+set -euo pipefail
 
-CI = ActiveSupport::ContinuousIntegration
-require_relative "../config/ci.rb"
+source "$(dirname "$0")/env.sh"
+
+run_step() {
+  local name="$1"
+  shift
+
+  echo
+  echo "== $name =="
+  "$@"
+}
+
+run_step "Setup" ./bin/setup --skip-server
+run_step "Style: Ruby" ./bin/rubocop
+run_step "Security: Gem audit" ./bin/bundler-audit
+run_step "Security: Importmap vulnerability audit" ./bin/importmap audit
+run_step "Security: Brakeman code analysis" ./bin/brakeman --quiet --no-pager --exit-on-warn --exit-on-error
+run_step "Tests: Rails" ./bin/rails test
+run_step "Tests: Seeds" env RAILS_ENV=test ./bin/rails db:seed:replant

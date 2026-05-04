@@ -1,7 +1,7 @@
-#!/usr/bin/env ruby
-require "rubygems"
-require "bundler/setup"
+#!/usr/bin/env bash
+set -euo pipefail
 
-ARGV.unshift("--ensure-latest")
+source "$(dirname "$0")/env.sh"
+require_command bundle
 
-load Gem.bin_path("brakeman", "brakeman")
+exec bundle exec brakeman --ensure-latest "$@"

@@ -1,8 +1,7 @@
-#!/usr/bin/env ruby
-require "rubygems"
-require "bundler/setup"
+#!/usr/bin/env bash
+set -euo pipefail
 
-# Explicit RuboCop config increases performance slightly while avoiding config confusion.
-ARGV.unshift("--config", File.expand_path("../.rubocop.yml", __dir__))
+source "$(dirname "$0")/env.sh"
+require_command bundle
 
-load Gem.bin_path("rubocop", "rubocop")
+exec bundle exec rubocop --config "$APP_ROOT/.rubocop.yml" "$@"

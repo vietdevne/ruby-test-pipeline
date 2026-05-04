@@ -1,6 +1,7 @@
-#!/usr/bin/env ruby
+#!/usr/bin/env bash
+set -euo pipefail
 
-require_relative "../config/environment"
-require "solid_queue/cli"
+source "$(dirname "$0")/env.sh"
+require_command bundle
 
-SolidQueue::Cli.start(ARGV)
+exec bundle exec ruby -e 'require "./config/environment"; require "solid_queue/cli"; SolidQueue::Cli.start(ARGV)' "$@"

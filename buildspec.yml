@@ -28,7 +28,7 @@ phases:
       - bin/importmap audit
       - bin/brakeman --quiet --no-pager --exit-on-warn --exit-on-error
       - bin/rails test
-      - bundle exec rspec
+      - bin/rspec
 
 cache:
   paths:
