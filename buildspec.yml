@@ -1,0 +1,36 @@
+version: 0.2
+
+env:
+  variables:
+    RAILS_ENV: test
+    BUNDLE_PATH: vendor/bundle
+    RUBOCOP_CACHE_ROOT: tmp/rubocop
+
+phases:
+  install:
+    runtime-versions:
+      ruby: 4.0
+    commands:
+      - ruby --version
+      - gem --version
+      - bundle --version
+      - bundle config set path "$BUNDLE_PATH"
+      - bundle install --jobs 4 --retry 3
+
+  pre_build:
+    commands:
+      - bin/rails db:test:prepare
+
+  build:
+    commands:
+      - bin/rubocop
+      - bin/bundler-audit
+      - bin/importmap audit
+      - bin/brakeman --quiet --no-pager --exit-on-warn --exit-on-error
+      - bin/rails test
+      - bundle exec rspec
+
+cache:
+  paths:
+    - vendor/bundle/**/*
+    - tmp/rubocop/**/*
